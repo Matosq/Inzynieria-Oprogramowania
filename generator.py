@@ -66,7 +66,6 @@ for i in range(1000):
     w = random.randrange(1, 41)
     l = random.randrange(1, 41)
 
-
     kontener = {
         "id_container": temp_id_container,
         "width_container": w,

@@ -9,6 +9,9 @@ class Resources:
     active_ships = []
     active_containers = []
 
+    "Dla drugiego algorytmu"
+    active_containers_2 = []
+
     def __init__(self):
         print("stworzylem obiekt Resources")
 
@@ -50,6 +53,7 @@ class Resources:
             temp = self.containers[0]
             temp['timestamp'] = time_stamp
             self.active_containers.append(temp)
+            self.active_containers_2.append(temp)
             self.containers.pop(0)
             if x % 100 == 0:
                 time_stamp += 1111111

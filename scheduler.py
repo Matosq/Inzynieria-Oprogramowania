@@ -9,7 +9,7 @@ from resources import *
 
 def get_next_container(conts, n, x_thres, y_thres, x_ship, y_ship):
     """
-    Funkcja sprawdza czy mozna dopasowac kolejny kontener z listy, jesli sie nie udana zadnego dopasowac zwraca pusty obiekt
+    Funkcja sprawdza czy mozna dopasowac kolejny kontener z listy, jesli sie nie uda zadnego dopasowac zwraca pusty obiekt
     :param conts: lista kontenerow
     :param n:
     :param x_thres: szerokosc do ktorej dopasowac kontener
@@ -24,75 +24,20 @@ def get_next_container(conts, n, x_thres, y_thres, x_ship, y_ship):
     return None
 
 
-def adjust_container(voxel, color, conts, z_thres, x_ship, y_ship, z_ship):
-    """
-    Funkcja przeszukuje cale pietro statku i upycha kontenery w wolne przestrzenie
-    :param voxel: voxels
-    :param conts: lista kontenerow
-    :param z_thres: prog na osi Z
-    :param x_ship: szerokosc statku
-    :param y_ship: dlugosc statku
-    :param z_ship: wysokosc statku
-    :return:
-    """
-    for adjust_cont in conts:
-        temp_x = 0
-        temp_y = 0
-        size_x_s = x_ship-adjust_cont['width_container']
-        size_y_s = y_ship-adjust_cont['length_container']
-        size_y_start = 0
-        #print(size_x_s)
-        #print(size_y_s)
-        #print(size_y_start)
-        for x_s in range(size_x_s):
-            temp_x += 1
-            for y_s in range(size_y_start, size_y_s):
-                temp_y += 1
-                #print("temp_x, temp_y: ", temp_x, temp_y)
-                #print("adjust_cont['width_container'], adjust_cont['length_container']: ", adjust_cont['width_container'], adjust_cont['length_container'])
-                if temp_y == adjust_cont['length_container']:
-                    size_y_start = y_s-temp_y
-                    temp_y = 0
-                    break
-
-                #print(voxel[x_s][y_s][z_thres])
-
-                if voxel[x_s][y_s][z_thres] is True:
-                    print("JETSETEM TU")
-                    temp_x = 0
-                    temp_y = 0
-                    size_y_start = 0
-                    break
-                print("temp_x, temp_y: ", temp_x, temp_y)
-
-                print("adjust_cont['width_container'], adjust_cont['length_container']: ", adjust_cont['width_container'], adjust_cont['length_container'])
-                if temp_x >= adjust_cont['width_container']:
-                    if temp_y >= adjust_cont['length_container']:
-                        print("UDALO SIE")
-                        cubee = (x >= x_s - container['width_container']) & (x < x_s)
-                        cubee &= (y >= y_s - container['length_container']) & (y < y_s)
-                        cubee &= (z >= z_thres) & (z < container['height_container'])
-
-
-                        random_color = (np.random.rand(1, 3))
-
-                        color[cubee] = matplotlib.colors.to_hex(random_color[0], keep_alpha=False)
-                        voxel |= cubee
-                        return voxel
-    return None
-
-
 def allocation(scheduler, ship):
-
+    """
+    Funkcja laduje kontenery na statek. Nie tworzy raportu. Zwraca liczbe zaladowanych kontenerow.
+    :param scheduler: obiekt klasy Resources
+    :param ship: wybrany statek
+    :return: liczba zaladowanych kontenerow
+    """
     width_ship = ship['width_ship']
     height_ship = ship['height_ship']
     length_ship = ship['length_ship']
 
     x, y, z = np.indices((width_ship, length_ship, height_ship))
 
-    #containers_1 = scheduler.active_containers.copy()
     containers_1 = scheduler.active_containers[:100]
-    print(containers_1)
 
     "Przygotowanie wykresu"
     voxels = (x == 0) & (y == 0) & (z == 0)
@@ -116,8 +61,6 @@ def allocation(scheduler, ship):
             if len(containers_1) == 0:
                 #scheduler.setActiveContainers(100)
                 containers_1 = scheduler.active_containers[number:number+100]
-                print("containers_1 ", containers_1)
-                print("len: ", len(containers_1))
 
             "Wyciagamy nastepny kontener, ktory da sie wlozyc w tym rzedzie"
             container = get_next_container(containers_1, 0, x_threshold, y_threshold, width_ship, length_ship)
@@ -126,7 +69,7 @@ def allocation(scheduler, ship):
                 #Usuwamy z listy kontenerow wybrany kontener
                 containers_1.remove(container)
                 number += 1
-                print("Laduje kontener nr ", number, " ", container)
+                #print("Laduje kontener nr ", number, " ", container)
                 temp_level = 0
 
                 cube = (x >= x_threshold) & (x < (x_threshold + container['width_container']))
@@ -157,7 +100,6 @@ def allocation(scheduler, ship):
                 Y_up_threshold = 0
                 break
 
-
     "Wizualizacja zapakowanych statkow"
 
     # fig = plt.figure()
@@ -169,6 +111,13 @@ def allocation(scheduler, ship):
 
 
 def create_report(scheduler, ship, number_of_report):
+    """
+    Funkcja laduje kontenery na wybrany statek. Na koncu tworzy raport i zwraca liste zaladowanych kontenerow.
+    :param scheduler: obiekt klasy Resources
+    :param ship: wybrany statek do zaladwania
+    :param number_of_report: ideks do numerowania kolejnych raportow
+    :return: lista zaladowanych kontenerow i wpisanych do raportu
+    """
     containers_to_report = []
     width_ship = ship['width_ship']
     height_ship = ship['height_ship']
@@ -178,8 +127,6 @@ def create_report(scheduler, ship, number_of_report):
 
     #containers_1 = scheduler.active_containers.copy()
     containers_1 = scheduler.active_containers[:100]
-
-    print(containers_1)
 
     "Przygotowanie wykresu"
     voxels = (x == 0) & (y == 0) & (z == 0)
@@ -203,8 +150,6 @@ def create_report(scheduler, ship, number_of_report):
             if len(containers_1) == 0:
                 #scheduler.setActiveContainers(100)
                 containers_1 = scheduler.active_containers[number:number+100]
-                print("containers_1 ", containers_1)
-                print("len: ", len(containers_1))
 
             "Wyciagamy nastepny kontener, ktory da sie wlozyc w tym rzedzie"
             container = get_next_container(containers_1, 0, x_threshold, y_threshold, width_ship, length_ship)
@@ -267,6 +212,5 @@ def create_report(scheduler, ship, number_of_report):
     ax = fig.gca(projection='3d')
     ax.voxels(voxels, facecolors=colors, edgecolor=None)
     plt.show()
-
 
     return containers_to_report
