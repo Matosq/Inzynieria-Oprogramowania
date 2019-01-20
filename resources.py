@@ -1,5 +1,8 @@
 import time
-
+"""
+Klasa pobiera z pliku statki i kontenery. Przetrzymuje dane i zarzadza aktywnymi
+statkami i kontenerami
+"""
 
 class Resources:
     ships = []
@@ -15,8 +18,7 @@ class Resources:
     def __init__(self):
         print("stworzylem obiekt Resources")
 
-    #def getDataFromFile(self):
-    #    "Pobranie danych o statkach i kontenerach z plikow"
+        "Pobranie danych o statkach i kontenerach z plikow"
 
         plik_statki = open('statki.txt', 'r')
 
